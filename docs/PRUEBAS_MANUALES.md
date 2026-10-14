@@ -52,3 +52,22 @@ Los pasos son secuenciales (el primer cliente creado tiene `id = 1`).
 ```bash
 sqlite3 customers.db 'select id, name, email, status, created_at from customers;'
 ```
+
+## Ver la base en DBeaver (u otro gestor)
+
+SQLite es un archivo (`customers.db`, en la raíz del proyecto tras `make migrate`).
+
+1. DBeaver → **Database → New Database Connection** → **SQLite** → Next.
+2. En **Path** pulsa **Browse** y elige el archivo `customers.db` (ruta absoluta, ej.
+   `/home/usuario/Documentos/VARIOS/pruebas/python_fastApi/customers.db`).
+3. Si pide descargar el driver SQLite, acepta. **Test Connection → Finish**.
+4. Navega a `customers → Tables → customers` y abre la pestaña **Data**.
+   La tabla `alembic_version` guarda la versión de migración aplicada.
+
+Notas:
+- Pulsa F5 (refresh) en DBeaver para ver datos nuevos creados vía API.
+- El archivo solo existe si ejecutaste `make migrate` o `make run`. El smoke test usa una BD
+  temporal que se borra al terminar, y pytest usa memoria: ninguno deja archivo.
+- Si cambias a escritura desde DBeaver mientras la API corre, haz commit en DBeaver
+  (modo auto-commit o botón Commit) para no dejar el archivo bloqueado.
+- Para ver la ruta exacta: `realpath customers.db`.
