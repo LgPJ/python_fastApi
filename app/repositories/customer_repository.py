@@ -20,6 +20,8 @@ class CustomerRepository(Protocol):
 
     def list(self, status: CustomerStatus | None = None) -> Sequence[Customer]: ...
 
+    def update_status(self, customer: Customer, status: CustomerStatus) -> Customer: ...
+
 
 class SqlAlchemyCustomerRepository:
     def __init__(self, session: Session) -> None:
@@ -47,3 +49,8 @@ class SqlAlchemyCustomerRepository:
         if status is not None:
             query = query.where(Customer.status == status)
         return self._session.scalars(query).all()
+
+    def update_status(self, customer: Customer, status: CustomerStatus) -> Customer:
+        customer.status = status
+        self._session.commit()
+        return customer

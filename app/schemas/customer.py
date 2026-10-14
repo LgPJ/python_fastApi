@@ -31,3 +31,7 @@ class CustomerRead(BaseModel):
     email: EmailStr
     status: CustomerStatus
     created_at: datetime
+
+
+class CustomerStatusUpdate(BaseModel):
+    status: CustomerStatus

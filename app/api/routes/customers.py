@@ -5,7 +5,7 @@ from fastapi import status as http_status
 
 from app.api.deps import CustomerServiceDep
 from app.models.customer import Customer, CustomerStatus
-from app.schemas.customer import CustomerCreate, CustomerRead
+from app.schemas.customer import CustomerCreate, CustomerRead, CustomerStatusUpdate
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 
@@ -39,3 +39,15 @@ def list_customers(
 )
 def get_customer(customer_id: int, service: CustomerServiceDep) -> Customer:
     return service.get_customer(customer_id)
+
+
+@router.patch(
+    "/{customer_id}/status",
+    response_model=CustomerRead,
+    summary="Update a customer's status",
+    responses={404: {"description": "Customer not found"}},
+)
+def update_customer_status(
+    customer_id: int, data: CustomerStatusUpdate, service: CustomerServiceDep
+) -> Customer:
+    return service.update_status(customer_id, data.status)

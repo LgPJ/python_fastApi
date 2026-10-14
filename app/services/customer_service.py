@@ -25,3 +25,7 @@ class CustomerService:
         if customer is None:
             raise CustomerNotFoundError(customer_id)
         return customer
+
+    def update_status(self, customer_id: int, status: CustomerStatus) -> Customer:
+        customer = self.get_customer(customer_id)
+        return self._repository.update_status(customer, status)
