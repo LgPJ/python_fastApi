@@ -28,8 +28,12 @@ La base SQLite persiste en un volumen. Las migraciones se aplican al arrancar.
 ## Tests
 
 ```bash
-pytest
+make test     # pytest (BD en memoria)
+make smoke    # end-to-end con servidor real y BD temporal (curl)
+make check    # ambos
 ```
+
+Pruebas paso a paso a mano: [docs/PRUEBAS_MANUALES.md](docs/PRUEBAS_MANUALES.md).
 
 ## Endpoints
 
