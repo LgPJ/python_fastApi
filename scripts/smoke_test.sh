@@ -64,6 +64,15 @@ request GET '/customers?status=ACTIVE';                                     chec
 request GET '/customers?status=BLOCKED';                                    check "list filter BLOCKED is empty" 200 '[]'
 request GET '/customers?status=NOPE';                                       check "list invalid status" 422
 request GET /customers;                                                     check "list all" 200 'juan@example.com'
+request POST /customers '{"name":"Ana","email":"ana@example.com"}' >/dev/null
+request POST /customers '{"name":"Beto","email":"beto@example.com"}' >/dev/null
+request GET '/customers?limit=1&offset=1';                                  check "pagination returns one item" 200 'ana@example.com'
+[[ "$BODY" != *juan@example.com* && "$BODY" != *beto@example.com* ]] && check "pagination skips other items" "$CODE" || check "pagination skips other items" FAIL
+TOTAL=$(curl -s -D - -o /dev/null "${BASE}/customers?limit=1" | tr -d '\r' | awk -F': ' 'tolower($1)=="x-total-count"{print $2}')
+CODE=$([[ "$TOTAL" == "3" ]] && echo 200 || echo "X-Total-Count=$TOTAL"); BODY=""; check "X-Total-Count header is 3" 200
+request GET '/customers?limit=0';                                           check "limit=0 rejected" 422
+request GET '/customers?limit=101';                                         check "limit=101 rejected" 422
+request GET '/customers?offset=-1';                                         check "negative offset rejected" 422
 
 echo
 echo "Result: $PASS passed, $FAIL failed"

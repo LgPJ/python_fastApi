@@ -41,7 +41,11 @@ Los pasos son secuenciales (el primer cliente creado tiene `id = 1`).
 | 15 | Filtro con resultados | `curl -i 'localhost:8000/customers?status=ACTIVE'` | 200, contiene a Juan |
 | 16 | Filtro sin resultados | `curl -i 'localhost:8000/customers?status=BLOCKED'` | 200 `[]` |
 | 17 | Filtro inválido | `curl -i 'localhost:8000/customers?status=NOPE'` | 422 |
-| 18 | Persistencia | detener y reiniciar el servidor, repetir caso 7 | 200 (datos persisten en `customers.db`) |
+| 18 | Paginación | crear 3 clientes (`ana`, `beto`, `carla`) y `curl -i 'localhost:8000/customers?limit=2&offset=1'` | 200, 2 clientes (los de posiciones 2 y 3), header `x-total-count: <total>` |
+| 19 | Offset más allá del final | `curl -i 'localhost:8000/customers?offset=1000'` | 200 `[]`, `x-total-count` sigue siendo el total |
+| 20 | Total respeta filtro | `curl -i 'localhost:8000/customers?status=ACTIVE&limit=1'` | `x-total-count` = cantidad de ACTIVE |
+| 21 | Paginación inválida | `?limit=0`, `?limit=101`, `?offset=-1`, `?limit=x` | 422 en todos |
+| 22 | Persistencia | detener y reiniciar el servidor, repetir caso 7 | 200 (datos persisten en `customers.db`) |
 
 ## Verificar la base directamente (opcional)
 

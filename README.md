@@ -40,7 +40,7 @@ Pruebas paso a paso a mano: [docs/PRUEBAS_MANUALES.md](docs/PRUEBAS_MANUALES.md)
 | Método | Ruta                              | Descripción                              | Códigos            |
 |--------|-----------------------------------|------------------------------------------|--------------------|
 | POST   | `/customers`                      | Crea cliente (status inicial `PENDING`)  | 201, 409, 422      |
-| GET    | `/customers?status=ACTIVE`        | Lista clientes, filtro opcional          | 200, 422           |
+| GET    | `/customers?status=&limit=&offset=` | Lista paginada, filtro opcional. Total en header `X-Total-Count` | 200, 422 |
 | GET    | `/customers/{customer_id}`        | Obtiene un cliente                       | 200, 404, 422      |
 | PATCH  | `/customers/{customer_id}/status` | Cambia el status                         | 200, 404, 422      |
 | GET    | `/health`                         | Health check                             | 200                |
@@ -60,8 +60,8 @@ curl -X POST http://localhost:8000/customers \
   -H "Content-Type: application/json" \
   -d '{"name": "Otro", "email": "juan@example.com"}'
 
-# Listar (con filtro)
-curl "http://localhost:8000/customers?status=ACTIVE"
+# Listar (filtro + paginación; limit 1-100, default 50; offset >= 0)
+curl -i "http://localhost:8000/customers?status=ACTIVE&limit=10&offset=0"
 
 # Obtener
 curl http://localhost:8000/customers/1

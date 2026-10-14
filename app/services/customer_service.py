@@ -1,9 +1,16 @@
 from collections.abc import Sequence
+from dataclasses import dataclass
 
 from app.core.exceptions import CustomerNotFoundError, DuplicateEmailError
 from app.models.customer import Customer, CustomerStatus
 from app.repositories.customer_repository import CustomerRepository
 from app.schemas.customer import CustomerCreate
+
+
+@dataclass(frozen=True)
+class CustomerPage:
+    items: Sequence[Customer]
+    total: int
 
 
 class CustomerService:
@@ -17,8 +24,13 @@ class CustomerService:
             raise DuplicateEmailError(data.email)
         return self._repository.add(name=data.name, email=data.email)
 
-    def list_customers(self, status: CustomerStatus | None = None) -> Sequence[Customer]:
-        return self._repository.list(status)
+    def list_customers(
+        self, status: CustomerStatus | None = None, limit: int = 50, offset: int = 0
+    ) -> CustomerPage:
+        return CustomerPage(
+            items=self._repository.list(status, limit, offset),
+            total=self._repository.count(status),
+        )
 
     def get_customer(self, customer_id: int) -> Customer:
         customer = self._repository.get(customer_id)

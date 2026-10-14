@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Protocol
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,11 @@ class CustomerRepository(Protocol):
 
     def get_by_email(self, email: str) -> Customer | None: ...
 
-    def list(self, status: CustomerStatus | None = None) -> Sequence[Customer]: ...
+    def list(
+        self, status: CustomerStatus | None = None, limit: int = 50, offset: int = 0
+    ) -> Sequence[Customer]: ...
+
+    def count(self, status: CustomerStatus | None = None) -> int: ...
 
     def update_status(self, customer: Customer, status: CustomerStatus) -> Customer: ...
 
@@ -44,11 +48,19 @@ class SqlAlchemyCustomerRepository:
     def get_by_email(self, email: str) -> Customer | None:
         return self._session.scalar(select(Customer).where(Customer.email == email))
 
-    def list(self, status: CustomerStatus | None = None) -> Sequence[Customer]:
-        query = select(Customer).order_by(Customer.id)
+    def list(
+        self, status: CustomerStatus | None = None, limit: int = 50, offset: int = 0
+    ) -> Sequence[Customer]:
+        query = select(Customer).order_by(Customer.id).limit(limit).offset(offset)
         if status is not None:
             query = query.where(Customer.status == status)
         return self._session.scalars(query).all()
+
+    def count(self, status: CustomerStatus | None = None) -> int:
+        query = select(func.count()).select_from(Customer)
+        if status is not None:
+            query = query.where(Customer.status == status)
+        return self._session.scalar(query) or 0
 
     def update_status(self, customer: Customer, status: CustomerStatus) -> Customer:
         customer.status = status

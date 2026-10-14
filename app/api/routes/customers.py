@@ -1,6 +1,8 @@
 from collections.abc import Sequence
 
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Query, Response
 from fastapi import status as http_status
 
 from app.api.deps import CustomerServiceDep
@@ -23,12 +25,18 @@ def create_customer(data: CustomerCreate, service: CustomerServiceDep) -> Custom
 @router.get(
     "",
     response_model=list[CustomerRead],
-    summary="List customers, optionally filtered by status",
+    summary="List customers (paginated, optional status filter). Total in X-Total-Count header",
 )
 def list_customers(
-    service: CustomerServiceDep, status: CustomerStatus | None = None
+    response: Response,
+    service: CustomerServiceDep,
+    status: CustomerStatus | None = None,
+    limit: Annotated[int, Query(ge=1, le=100, description="Page size")] = 50,
+    offset: Annotated[int, Query(ge=0, description="Items to skip")] = 0,
 ) -> Sequence[Customer]:
-    return service.list_customers(status)
+    page = service.list_customers(status, limit, offset)
+    response.headers["X-Total-Count"] = str(page.total)
+    return page.items
 
 
 @router.get(
