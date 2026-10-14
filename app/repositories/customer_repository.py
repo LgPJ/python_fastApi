@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Protocol
 
 from sqlalchemy import select
@@ -14,6 +15,8 @@ class CustomerRepository(Protocol):
     def add(self, name: str, email: str) -> Customer: ...
 
     def get_by_email(self, email: str) -> Customer | None: ...
+
+    def list(self, status: CustomerStatus | None = None) -> Sequence[Customer]: ...
 
 
 class SqlAlchemyCustomerRepository:
@@ -33,3 +36,9 @@ class SqlAlchemyCustomerRepository:
 
     def get_by_email(self, email: str) -> Customer | None:
         return self._session.scalar(select(Customer).where(Customer.email == email))
+
+    def list(self, status: CustomerStatus | None = None) -> Sequence[Customer]:
+        query = select(Customer).order_by(Customer.id)
+        if status is not None:
+            query = query.where(Customer.status == status)
+        return self._session.scalars(query).all()
