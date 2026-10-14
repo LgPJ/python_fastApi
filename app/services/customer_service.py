@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from app.core.exceptions import DuplicateEmailError
+from app.core.exceptions import CustomerNotFoundError, DuplicateEmailError
 from app.models.customer import Customer, CustomerStatus
 from app.repositories.customer_repository import CustomerRepository
 from app.schemas.customer import CustomerCreate
@@ -19,3 +19,9 @@ class CustomerService:
 
     def list_customers(self, status: CustomerStatus | None = None) -> Sequence[Customer]:
         return self._repository.list(status)
+
+    def get_customer(self, customer_id: int) -> Customer:
+        customer = self._repository.get(customer_id)
+        if customer is None:
+            raise CustomerNotFoundError(customer_id)
+        return customer

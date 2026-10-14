@@ -14,6 +14,8 @@ class CustomerRepository(Protocol):
 
     def add(self, name: str, email: str) -> Customer: ...
 
+    def get(self, customer_id: int) -> Customer | None: ...
+
     def get_by_email(self, email: str) -> Customer | None: ...
 
     def list(self, status: CustomerStatus | None = None) -> Sequence[Customer]: ...
@@ -33,6 +35,9 @@ class SqlAlchemyCustomerRepository:
             self._session.rollback()
             raise DuplicateEmailError(email) from exc
         return customer
+
+    def get(self, customer_id: int) -> Customer | None:
+        return self._session.get(Customer, customer_id)
 
     def get_by_email(self, email: str) -> Customer | None:
         return self._session.scalar(select(Customer).where(Customer.email == email))

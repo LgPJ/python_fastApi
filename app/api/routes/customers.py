@@ -29,3 +29,13 @@ def list_customers(
     service: CustomerServiceDep, status: CustomerStatus | None = None
 ) -> Sequence[Customer]:
     return service.list_customers(status)
+
+
+@router.get(
+    "/{customer_id}",
+    response_model=CustomerRead,
+    summary="Get a customer by id",
+    responses={404: {"description": "Customer not found"}},
+)
+def get_customer(customer_id: int, service: CustomerServiceDep) -> Customer:
+    return service.get_customer(customer_id)
