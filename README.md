@@ -9,13 +9,23 @@ API REST para registrar y consultar clientes (FastAPI + Pydantic + SQLAlchemy + 
 ## Ejecución local
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv        # si `python3` no existe, usa `python` (o `py` en Windows)
+source .venv/bin/activate    # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 alembic upgrade head            # crea customers.db con el esquema
 uvicorn app.main:app --reload
 ```
 
 Documentación interactiva: http://localhost:8000/docs
+
+> Debian/Ubuntu: si `venv` falla con "ensurepip is not available", instala
+> `sudo apt install python3-venv` (o usa `uv venv .venv` si tienes uv).
+
+Atajo con make (Linux/macOS), detecta `python3` o `python` solo:
+
+```bash
+make install && make run
+```
 
 ## Ejecución con Docker
 

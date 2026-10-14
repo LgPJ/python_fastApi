@@ -1,9 +1,11 @@
+# Interpreter used only to create the venv: python3 on Linux/macOS, falls back to python.
+BOOTSTRAP ?= $(shell command -v python3 || command -v python)
 PY ?= .venv/bin/python
 
 .PHONY: install migrate run test smoke check
 
 install:  ## create venv and install dependencies
-	python3 -m venv .venv
+	$(BOOTSTRAP) -m venv .venv
 	$(PY) -m pip install -r requirements-dev.txt
 
 migrate:  ## apply DB migrations
