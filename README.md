@@ -156,6 +156,13 @@ curl -X PATCH http://localhost:8000/customers/1/status \
 curl http://localhost:8000/health
 ```
 
+## Postman
+
+Importa `postman/customers_api.postman_collection.json` (Postman → Import). Incluye los 5
+endpoints y casos de error, con tests automáticos en cada request. Variable `baseUrl` =
+`http://127.0.0.1:8000` (cámbiala si usas otro puerto). Ejecuta las carpetas en orden
+(botón "Run collection"): "Customers" guarda el `customerId` y usa un email nuevo en cada corrida.
+
 ## Configuración
 
 | Variable       | Default                     |
