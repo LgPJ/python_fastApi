@@ -183,4 +183,3 @@ alembic/          # migraciones
 tests/
 ```
 
-Detalle de diseño y decisiones: ver [EXPLICACION.md](EXPLICACION.md).
