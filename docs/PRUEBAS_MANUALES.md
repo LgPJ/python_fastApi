@@ -12,10 +12,10 @@ make check     # pytest + smoke end-to-end
 ## Preparar entorno manual
 
 ```bash
-make migrate && make run        # API en http://127.0.0.1:8000
+make run                    # migra la BD y arranca la API: en http://127.0.0.1:8000
 ```
 
-Para empezar de cero: detener el servidor, `rm customers.db`, `make migrate && make run`.
+Para empezar de cero: detener el servidor, `rm customers.db`, `make run`.
 Alternativa gráfica: abrir http://127.0.0.1:8000/docs y usar "Try it out".
 
 Los pasos son secuenciales (el primer cliente creado tiene `id = 1`).

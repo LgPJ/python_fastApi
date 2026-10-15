@@ -2,40 +2,111 @@
 
 API REST para registrar y consultar clientes (FastAPI + Pydantic + SQLAlchemy + SQLite).
 
-## Requisitos
+## Inicio rápido (paso a paso, sin conocimientos previos)
 
-- Python 3.10+ (o Docker)
+Necesitas una terminal en Linux o macOS. Sigue los pasos en orden.
 
-## Ejecución local
+### Paso 0 — Requisitos
+
+Verifica que tienes Python 3.10 o superior:
 
 ```bash
-python3 -m venv .venv        # si `python3` no existe, usa `python` (o `py` en Windows)
-source .venv/bin/activate    # Windows: .venv\Scripts\activate
+python3 --version
+```
+
+En Debian/Ubuntu instala además el soporte de entornos virtuales:
+
+```bash
+sudo apt install python3-venv
+```
+
+### Paso 1 — Entrar a la carpeta del proyecto
+
+```bash
+cd python_fastApi
+```
+
+(La carpeta que contiene este README y el archivo `Makefile`.)
+
+### Paso 2 — Instalar (solo la primera vez)
+
+```bash
+make install
+```
+
+Crea un entorno aislado en `.venv` e instala las dependencias. Tarda 1-2 minutos.
+
+### Paso 3 — Arrancar la API
+
+```bash
+make run
+```
+
+Este único comando hace **dos cosas**: crea o actualiza la base de datos (`customers.db`) y
+arranca el servidor. **No necesitas ejecutar nada más para la base de datos.**
+
+Sabrás que funcionó cuando veas:
+
+```
+INFO:     Uvicorn running on http://127.0.0.1:8000
+```
+
+Deja esa terminal abierta: la API vive mientras el comando esté corriendo.
+
+### Paso 4 — Probarla
+
+Abre en el navegador: **http://127.0.0.1:8000/docs**. Ahí puedes usar cada endpoint con el
+botón "Try it out". También: http://127.0.0.1:8000/health debe mostrar `{"status":"ok"}`.
+
+### Paso 5 — Detenerla
+
+En la terminal donde corre, pulsa `Ctrl + C`.
+
+Para volver a arrancarla otro día solo repites el **Paso 1 y el Paso 3**.
+
+### ¿Qué NO debes hacer?
+
+- No ejecutes `make run` y `uvicorn ...` a la vez: ambos arrancan el servidor y el segundo
+  falla con "address already in use". Usa uno solo.
+- No hace falta instalar ni configurar ninguna base de datos: SQLite es un archivo.
+
+### Problemas comunes
+
+| Mensaje | Solución |
+|---------|----------|
+| `make: command not found` | `sudo apt install make`, o usa la sección "Sin make" |
+| `ensurepip is not available` | `sudo apt install python3-venv` y repite el Paso 2 |
+| `address already in use` | Ya hay una API corriendo; ciérrala con `Ctrl + C` o usa otro puerto |
+| `python: command not found` | Usa `python3` (en Linux `python` suele no existir) |
+
+## Sin make (alternativa manual)
+
+Equivale a los pasos 2 y 3. Ejecuta línea por línea dentro de la carpeta del proyecto:
+
+```bash
+python3 -m venv .venv              # crea el entorno aislado
+source .venv/bin/activate          # actívalo (el prompt mostrará "(.venv)"); Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-alembic upgrade head            # crea customers.db con el esquema
-uvicorn app.main:app --reload
+alembic upgrade head               # crea/actualiza la base de datos
+uvicorn app.main:app --reload      # arranca la API
 ```
 
-Documentación interactiva: http://localhost:8000/docs
+Cada vez que abras una terminal nueva debes repetir `source .venv/bin/activate` antes de
+`uvicorn`. Importante: confirma que ves `(.venv)` antes de `pip install`; si no, instalarías
+en tu Python global.
 
-> Debian/Ubuntu: si `venv` falla con "ensurepip is not available", instala
-> `sudo apt install python3-venv` (o usa `uv venv .venv` si tienes uv).
-
-Atajo con make (Linux/macOS), detecta `python3` o `python` solo:
-
-```bash
-make install && make run
-```
-
-## Ejecución con Docker
+## Ejecución con Docker (alternativa)
 
 ```bash
 docker compose up --build
 ```
 
-La base SQLite persiste en un volumen. Las migraciones se aplican al arrancar.
+La API queda en http://127.0.0.1:8000. Las migraciones se aplican al arrancar y la base
+persiste en un volumen. No necesitas Python instalado.
 
 ## Tests
+
+(Requieren haber hecho antes `make install`.)
 
 ```bash
 make test     # pytest (BD en memoria)
